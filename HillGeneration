@@ -1,0 +1,28 @@
+#Om Patel
+#opatel
+
+from cmu_112_graphics import *
+import tkinter, math, random
+import numpy as np
+
+
+def appStarted(app):
+    app.points = [(50,50),(100,250),(150,400)]
+        
+def drawLine(canvas):
+    x0 = 0
+    y0 = 100
+    for x in range(800):
+        y = 100 * math.sin(x/30) + 200
+        canvas.create_line(x0, y0, x, y)
+        x0 = x
+        y0 = y
+
+
+def redrawAll(app, canvas):
+    drawLine(canvas)
+
+
+
+
+runApp(width = 800,height = 600)

@@ -1,0 +1,125 @@
+#Buggy Demo
+#Om Patel
+#opatel
+
+#this is a general idea of how buggues will be made and move around the screen
+
+from cmu_112_graphics import *
+
+def appStarted(app):
+    #main buggy coordinate
+    app.buggyCoordinateX = app.width / 2
+    app.buggyCoordinateY = app.height / 2
+
+    #buggy hull
+    app.buggyHullLength = 50
+    app.buggyHullSize = 30
+    app.buggyHullColor = 'black'
+
+    #buggy hull bottom
+    app.buggyHullBottomX0 = app.buggyCoordinateX - (app.buggyHullLength / 2)
+    app.buggyHullBottomX1 = app.buggyCoordinateX + (app.buggyHullLength / 2)
+    app.buggyHullBottomY0 = app.buggyCoordinateY
+    app.buggyHullBottomY1 = app.buggyCoordinateY
+
+    #buggy wheel
+    app.buggyFrontWheelSize = 6
+    app.buggyBackWheelSize = 5
+    app.buggyFrontWheelColor = 'yellow'
+    app.buggyBackWheelColor = 'red'
+
+    #buggy front wheel
+    app.buggyFrontWheelX0 = app.buggyHullBottomX1 - (app.buggyFrontWheelSize * 2)
+    app.buggyFrontWheelY0 = app.buggyHullBottomY1 - (app.buggyFrontWheelSize/2)
+    app.buggyFrontWheelX1 = app.buggyHullBottomX1 - (app.buggyFrontWheelSize)
+    app.buggyFrontWheelY1 = app.buggyHullBottomY1 + (app.buggyFrontWheelSize)
+
+    #buggy back wheel
+    app.buggyBackWheelX0 = app.buggyHullBottomX0 + (app.buggyBackWheelSize)
+    app.buggyBackWheelY0 = app.buggyHullBottomY1 - (app.buggyBackWheelSize / 2)
+    app.buggyBackWheelX1 = app.buggyHullBottomX0 + (app.buggyBackWheelSize * 2)
+    app.buggyBackWheelY1 = app.buggyHullBottomY1 + (app.buggyBackWheelSize)
+    
+    #buggy Hull
+    app.buggyHullX0 = app.buggyHullBottomX1
+    app.buggyHullY0 = app.buggyHullBottomY0 - app.buggyHullSize / 2
+    app.buggyHullX1 = app.buggyHullBottomX0
+    app.buggyHullY1 = app.buggyHullBottomY0 + app.buggyHullSize / 2
+
+    #buggy pushbar
+    app.buggyPushBarSize = 30
+
+    app.buggyPushBarX0 = (app.buggyBackWheelX0 + app.buggyBackWheelX1) / 2
+    app.buggyPushBarY0 = app.buggyHullBottomY0
+    app.buggyPushBarX1 = app.buggyPushBarX0 - app.buggyPushBarSize
+    app.buggyPushBarY1 = app.buggyPushBarY0 - app.buggyPushBarSize
+
+    #buggy pushbar handle
+    app.buggyPushBarHandleSize = 3
+    app.buggyPushBarHandleColor = 'cyan'
+
+    app.buggyPushBarHandleX0 = app.buggyPushBarX1 - app.buggyPushBarHandleSize
+    app.buggyPushBarHandleY0 = app.buggyPushBarY1 - app.buggyPushBarHandleSize / 2
+    app.buggyPushBarHandleX1 = app.buggyPushBarX1 + app.buggyPushBarHandleSize
+    app.buggyPushBarHandleY1 = app.buggyPushBarY1 + app.buggyPushBarHandleSize / 2
+
+#used if I want to move the buggy around
+def keyPressed(app, event):
+    if event.key == 'Left':
+        app.buggyCoordinateX -= 1
+    elif event.key == 'Right':
+        app.buggyCoordinateX += 1
+    elif event.key == 'Up':
+        app.buggyCoordinateY -= 1
+    elif event.key == 'Down':
+        app.buggyCoordinateY += 1
+
+
+def drawBuggyHullBottom(app, canvas):
+    canvas.create_line(app.buggyHullBottomX0, app.buggyHullBottomY0,
+                        app.buggyHullBottomX1, app.buggyHullBottomY1,
+                        fill = app.buggyHullColor)
+
+def drawBuggyFrontWheel(app, canvas):
+    canvas.create_oval(app.buggyFrontWheelX0, app.buggyFrontWheelY0,
+                        app.buggyFrontWheelX1, app.buggyFrontWheelY1,
+                        fill = app.buggyFrontWheelColor)
+
+def drawBuggyBackWheel(app, canvas):
+    canvas.create_oval(app.buggyBackWheelX0, app.buggyBackWheelY0,
+                        app.buggyBackWheelX1, app.buggyBackWheelY1,
+                        fill = app.buggyBackWheelColor)
+
+def drawBuggyHull(app,canvas):
+    canvas.create_arc(app.buggyHullX0, app.buggyHullY0,
+                        app.buggyHullX1, app.buggyHullY1,
+                        fill = app.buggyHullColor,
+                        start = 0,
+                        extent = 180)
+
+def drawBuggyPushbar(app, canvas):
+    canvas.create_line(app.buggyPushBarX0, app.buggyPushBarY0,
+                        app.buggyPushBarX1, app.buggyPushBarY1,
+                        width = 3)
+
+def drawBuggyPushBarHandle(app, canvas):
+    canvas.create_oval(app.buggyPushBarHandleX0, app.buggyPushBarHandleY0,
+                    app.buggyPushBarHandleX1, app.buggyPushBarHandleY1,
+                    fill = app.buggyPushBarHandleColor)
+
+def drawBuggy(app, canvas):
+    drawBuggyFrontWheel(app, canvas)
+    drawBuggyHullBottom(app, canvas)
+    drawBuggyPushbar(app, canvas)
+    drawBuggyPushBarHandle(app, canvas)
+    drawBuggyHull(app,canvas)
+    drawBuggyBackWheel(app, canvas)
+    
+
+
+def redrawAll(app, canvas):
+    drawBuggy(app, canvas)
+    print(app.buggyCoordinateX, app.buggyCoordinateY)
+
+
+runApp(width = 800,height = 600)

@@ -1,0 +1,195 @@
+#Om Patel
+#opatel
+
+#tp0 deliverable
+
+#this deliverable follows terrain generation using lines to create
+#uphill and downhill terrains using slopes
+
+from numpy import size
+from cmu_112_graphics import *
+import math, tkinter, random
+
+#stores data to be used by multiple functions
+def appStarted(app):
+    #used for terrain generation data
+    app.startingPlatformHeight = (app.height / 2)
+    app.startingPlatformDistance = 20
+
+    app.slopeDistance =  app.width - 40
+    app.slopeHeight = app.height - (app.height / 4)
+
+    app.endingPlatformDistance = app.width
+    
+    app.setStartingPlatformDistance = True
+    app.setStartingPlatformHeight = True
+
+    app.setStartingSlopeDistance = True
+    app.setStartingSlopeHeight = True
+
+    app.startingPlatformPlaced = False
+
+    app.setEndingPlatformDistance = True
+    app.setEndingPlatformDistance = True
+
+    #used for buggy data
+    app.moveBuggy = False
+
+    app.buggyX = app.width / 2
+    app.buggyY = app.height / 2
+    app.buggySize = 8
+
+
+#tracks key events
+def keyPressed(app, event):
+    if app.setStartingPlatformDistance:
+        if event.key == "Right":
+            app.startingPlatformDistance += 10
+        elif event.key == "Left":
+            app.startingPlatformDistance -= 10
+        if event.key == "Enter":
+            app.setStartingPlatformDistance = False
+
+    elif app.setStartingPlatformHeight:
+        if event.key == "Up":
+            app.startingPlatformHeight -= 10
+        elif event.key == "Down":
+            app.startingPlatformHeight += 10
+        if event.key == "Enter":
+            app.setStartingPlatformHeight = False
+            app.startingPlatformPlaced = True
+            
+    elif app.setStartingSlopeDistance:
+        if event.key == "Right":
+            app.slopeDistance += 10
+        elif event.key == "Left":
+            app.slopeDistance -= 10
+        if event.key == "Enter":
+            app.setStartingSlopeDistance = False
+            
+    elif app.setStartingSlopeHeight:
+        if event.key == "Up":
+            app.slopeHeight -= 10
+        elif event.key == "Down":
+            app.slopeHeight += 10
+        if event.key == "Enter":
+            app.setStartingSlopeHeight = False
+            app.moveBuggy = True
+    
+    elif app.moveBuggy:
+        if event.key == "Up":
+            app.buggyY -= 5
+        elif event.key == "Down":
+            app.buggyY += 5
+        elif event.key == "Right":
+            app.buggyX += 5
+        elif event.key == "Left":
+            app.buggyX -= 5
+        elif event.key == "1":
+            app.buggySize -= 2
+        elif event.key == "2":
+            app.buggySize += 2
+
+#gets coordinates for starting platform
+def startingPlatformCoordinates(app):
+    x1 = app.startingPlatformDistance
+    x0 = 0
+    x1 = app.startingPlatformDistance
+    y0, y1 = app.startingPlatformHeight, app.startingPlatformHeight
+
+    return x0, y0, x1, y1
+
+#generates starting platform on the canvas
+def drawStartingPlatform(app,canvas):
+    canvas.create_line(startingPlatformCoordinates(app), fill = 'black')
+    if app.setStartingPlatformDistance:
+        textLineX0 = app.width / 2
+        textLineY0 = 20
+        canvas.create_text(textLineX0, textLineY0, anchor = 'center',
+                            text = "Press the 'Right' or 'Left' arrow keys to adjust the platform Length.")
+        canvas.create_text(textLineX0, (textLineY0 + 10), anchor = 'center',
+                            text = "Press the 'Enter' key to confirm thr platform length")
+    elif app.setStartingPlatformHeight and not app.setStartingPlatformDistance:
+        textLineX0 = app.width / 2
+        textLineY0 = 20
+        canvas.create_text(textLineX0, textLineY0, anchor = 'center',
+                            text = "Press the 'Up' or 'Down' arrow keys to adjust the platform Length.")
+        canvas.create_text(textLineX0, (textLineY0 + 10), anchor = 'center',
+                            text = "Press the 'Enter' key to confirm thr platform length")
+
+#gets coordinates to draw the slope
+def slopeCoordinates(app):
+    x0 = app.startingPlatformDistance
+    y0 = app.startingPlatformHeight
+
+    x1 = app.slopeDistance
+    y1 = app.slopeHeight
+
+    return x0, y0, x1, y1
+
+#generates the slope on the canvas
+def drawSlopeCoordinates(app, canvas):
+    if app.startingPlatformPlaced:
+        canvas.create_line(slopeCoordinates(app), fill = "black")
+
+    if app.setStartingSlopeDistance and app.startingPlatformPlaced:
+        textLineX0 = app.width / 2
+        textLineY0 = 20
+        canvas.create_text(textLineX0, textLineY0, anchor = "center",
+                    text = "Press the 'Right' or 'Left' keys to adjust the length of the slope.")
+        canvas.create_text(textLineX0, (textLineY0 + 10), anchor = "center",
+                    text = "Press 'Enter' to confirm the length of your slope.")
+
+    elif (app.setStartingSlopeHeight and not app.setStartingSlopeDistance
+            and app.startingPlatformPlaced):
+        textLineX0 = app.width / 2
+        textLineY0 = 20
+        canvas.create_text(textLineX0, textLineY0, anchor = "center",
+                    text = "Press the 'Up' or 'Down' keys to adjust the height of the slope.")
+        canvas.create_text(textLineX0, (textLineY0 + 10), anchor = "center",
+                    text = "Press 'Enter' to confirm the height of your slope.")
+
+#gets the coordinates of the ending platform
+def endingPlatformCoordinates(app):
+    x0 = app.slopeDistance
+    y0, y1 = app.slopeHeight, app.slopeHeight
+    x1 = app.endingPlatformDistance
+    
+    return x0, y0, x1, y1
+
+#generates the ending platform on the canvas
+def drawEndingPlatform(app, canvas):
+    if not app.setStartingSlopeHeight:
+        canvas.create_line(endingPlatformCoordinates(app), fill = "black")
+
+def buggyCoordinates(app):
+    x0 = app.buggyX - app.buggySize
+    y0 = app.buggyY - (app.buggySize / 4)
+    x1 = app.buggyX + app.buggySize
+    y1 = app.buggyY + (app.buggySize / 4)
+    
+    return x0, y0, x1, y1
+
+def drawBuggy(app, canvas):
+    if app.moveBuggy:
+        canvas.create_oval(buggyCoordinates(app), fill = "red")  
+
+        x0 = app.width / 2
+        y0 = 20
+        canvas.create_text(x0, y0, anchor = "center",
+                        text = "Use the arrow keys to move the buggy around the canvas.")
+        canvas.create_text(x0, (y0 + 10), anchor = "center",
+                        text = "Press '1' to decrease the size of the buggy.")
+        canvas.create_text(x0, (y0 + 20), anchor = "center",
+                        text = "Press '2' to increase the size of the buggy.")
+
+#draws all graphics on the canvas
+def redrawAll(app, canvas):
+    drawStartingPlatform(app, canvas)
+    drawSlopeCoordinates(app, canvas)
+    drawEndingPlatform(app, canvas)
+    
+    drawBuggy(app,canvas)
+    
+runApp(width = 1000, height = 600)
+
